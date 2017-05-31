@@ -4,6 +4,7 @@
   "experimentalDecorators": true,
   "private": true,
   "dependencies": {
+    "express": "^4.15.3",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-keydown": "^1.7.3"
