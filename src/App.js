@@ -19,14 +19,27 @@ class App extends Component {
     this.board.advanceBoard(res);
   }
 
+  showAboutHelpAlert() {
+    let message = 'ReactJS implementation of a tetris game. written by Yuval Haspel.'
+    let keys = [
+      'Keys:',
+      '<< - move left',
+      '@  - rotate tetrimino',
+      '> - move right'
+    ];
+    alert(message + '\n' + keys.join('\n'));
+  }
+
   render() {
     return (
       <div>
-        <h1>ReacTris</h1>
-        <div>
-          Play Tetris!
+        <div onClick={this.showAboutHelpAlert} className="header-outer">
+          <div className="bg">
+            <h1>Tetris</h1>
+            <h5>by Yuval Haspel</h5>
+            <Timer onTimeChange={this.advanceRow} ref={instance => { this.timer = instance; }}/>
+          </div>
         </div>
-        <Timer onTimeChange={this.advanceRow} ref={instance => { this.timer = instance; }}/>
         <div>
           <Board onTimerStop={this.stopTimer} ref={instance => { this.board = instance; }}/>
         </div>

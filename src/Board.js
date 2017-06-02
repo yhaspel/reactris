@@ -62,6 +62,7 @@ export class Board extends Component {
         this.removeCompletedRows(completedRowIndices);
       }
       this.putNewTetriminoOnBoard();
+      
     } else {
       this.advanceTetriminos();
     }
@@ -69,30 +70,100 @@ export class Board extends Component {
     this.setBoardWithTetriminos();
   }
 
-  detectBottomCollision() {
-    let collision = false;
-      // check last row collistion here. consider removing all 0 row 
-    for (let i=0; i<this.currentTetrimino.dotArray.length-1; i++) {
-      for (let j=0; j<this.currentTetrimino.dotArray[i].length; j++) {
-        if (!!this.currentTetrimino.dotArray[i][j]
-        && !!!this.currentTetrimino.dotArray[i+1][j]) { // and no block under in the same tetriminos (Thus ensuring the last block from bottom)
-          // collision with bottom of board
-          if (this.currentTetrimino.coordinates.i+i+1 >= this.state.boardArray.length) {
-            return true;
-          }
-          // collision with another brick
-          if (!!this.state.boardArray[this.currentTetrimino.coordinates.i+i+1][this.currentTetrimino.coordinates.j+j]){
-            if (this.currentTetrimino.coordinates.i === 0) {
-              this.setState({mode: 'game over'});
-              this.props.onTimerStop(this.counter);
-              alert('GAME OVER!');
+  detectRightCollision() {
+      let coords = this.getRightCoords();
+      for (let coord of coords) { 
+        let i = coord.i;
+        let j = coord.j;
+        if (j+1 >= BOARD_WIDTH
+        || !!this.state.boardArray[i][j+1]) {
+          return true;
+        }
+      }
+      return false;
+  }
+
+  getRightCoords() {
+    let coords = [];
+    for(let i=0; i<this.currentTetrimino.dotArray.length; i++) {
+      for(let j=this.currentTetrimino.dotArray[0].length-1; j>=0; j--) {
+        if (!!this.currentTetrimino.dotArray[i][j]) { 
+          coords.push(
+            {
+              i: (i + this.currentTetrimino.coordinates.i), 
+              j: (j + this.currentTetrimino.coordinates.j)              
             }
-            return true;
-          }
+          );
+          continue;
         }
       }
     }
-    return collision;
+    return coords;
+  }
+
+  detectLeftCollision() {
+      let coords = this.getLeftCoords();
+
+      for (let coord of coords) { 
+        let i = coord.i;
+        let j = coord.j;
+        if (j <= 0
+        || !!this.state.boardArray[i][j-1]) {
+          return true;
+        }
+      }
+      return false;
+  }
+
+  getLeftCoords() {
+    let coords = [];
+    for(let i=0; i<this.currentTetrimino.dotArray.length; i++) {
+      for(let j=0; j<this.currentTetrimino.dotArray[0].length; j++) {
+        if (!!this.currentTetrimino.dotArray[i][j]) {
+          coords.push(
+            {
+              i: (i + this.currentTetrimino.coordinates.i), 
+              j: (j + this.currentTetrimino.coordinates.j)              
+            }
+          );
+          continue;
+        }
+      }
+    }
+    return coords;
+  }
+
+  detectBottomCollision() {
+      let coords = this.getBottomCoords();
+
+      for (let coord of coords) { 
+        let i = coord.i;
+        let j = coord.j;
+        if (i+1 >= this.state.boardArray.length
+        || !!this.state.boardArray[i+1][j]) {
+          return true;
+        }
+      }
+      return false;
+  }
+
+  getBottomCoords() {
+    let coords = [];
+
+    for(let j=0; j< this.currentTetrimino.dotArray[0].length; j++) {
+      for(let i=0; i< this.currentTetrimino.dotArray.length; i++) {
+        if (!!this.currentTetrimino.dotArray[i][j] 
+        && !!!this.currentTetrimino.dotArray[i+1][j]) {
+          coords.push(
+            {
+              i: (i + this.currentTetrimino.coordinates.i), 
+              j: (j + this.currentTetrimino.coordinates.j)              
+            }
+          );
+        }
+      }
+    }
+    return coords;
   }
 
   advanceTetriminos = () => {
@@ -100,6 +171,11 @@ export class Board extends Component {
       this.clearCurrentTetrimino();
       this.currentTetrimino.advanceYCoords();
     } else {
+      if (this.currentTetrimino.coordinates.i === 0) {
+        this.setState({mode: 'game over'});
+        this.props.onTimerStop(this.counter);
+        alert('GAME OVER!');
+      }
       if (this.state.mode !== 'game over') {
         this.setState({mode: 'bottom collision'});
       }
@@ -163,14 +239,14 @@ export class Board extends Component {
 
   handleLeftClick(e) {
       this.clearCurrentTetrimino();
-      if (this.currentTetrimino.coordinates.j > 0
-        && !!!this.state.boardArray[this.currentTetrimino.coordinates.i][this.currentTetrimino.coordinates.j-1]) {
+      if (!this.detectLeftCollision()) {
         this.currentTetrimino.coordinates.j--;
       }
       this.setBoardWithTetriminos();
   }
 
   handleRotateClick(e) {
+      this.setState({mode: 'rotation'});
       this.clearCurrentTetrimino();
       this.currentTetrimino.rotate();
       this.setBoardWithTetriminos();
@@ -178,8 +254,7 @@ export class Board extends Component {
 
   handleRightClick(e) {
       this.clearCurrentTetrimino();
-      if (this.currentTetrimino.coordinates.j + this.currentTetrimino.getRightmostIndex() < this.state.boardArray[0].length
-        && !!!this.state.boardArray[this.currentTetrimino.coordinates.i][this.currentTetrimino.coordinates.j+1]) {
+      if (!this.detectRightCollision()) {
         this.currentTetrimino.coordinates.j++;
       }
       this.setBoardWithTetriminos();
@@ -187,15 +262,13 @@ export class Board extends Component {
 
   render() {
     return (
-      <div onKeyDown={this.handleKeyPress}>
-        <div>
-          Score:{ this.state.score }
-        </div>
-        <button onClick={(e) => this.handleLeftClick(e)}>{LEFT}</button>
-        <button onClick={(e) => this.handleRotateClick(e)}>{ROTATE}</button>
-        <button onClick={(e) => this.handleRightClick(e)}>{RIGHT}</button>
+      <div>
         <div className="tetris-board">
-            <table>
+          <div className="bg">
+            <div>
+              Score:{ this.state.score }
+            </div>
+            <table className="tetris-board-table">
                 <tbody>
                     {this.state.boardArray.map(function(row, i) {
                     return (
@@ -208,6 +281,14 @@ export class Board extends Component {
                     })}
                 </tbody>
             </table>
+            <div className="action-buttons-outer">
+              <div className="action-buttons">
+                <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleLeftClick(e)}>{LEFT}</button>
+                <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleRotateClick(e)}>{ROTATE}</button>
+                <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleRightClick(e)}>{RIGHT}</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

@@ -23,15 +23,38 @@
   to { transform: rotate(360deg); }
 }
 
-.tetris-board {
+.tetris-board-table {
   border: 6px solid darkorange;
+  max-width: 100%;
+}
+
+.tetris-board, .header-outer {
+  width: 100%;
+  position: relative;
+}
+
+.bg {
+  position:relative;
+  z-index: 1;
+  height: 100%;
   max-width: 234px;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 234px) {
+  .nebula {
+      width: 100%;
+      overflow: hidden;
+      margin: 0 -150px 0 -150px;
+  }
 }
 
 .board-cell {
   width: 15px;
   height: 18px;
   text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
 .red {
@@ -67,4 +90,20 @@
 .teal {
   background-color: teal;
   color: teal;
+}
+
+.action-button {
+  min-width: 48px;
+  max-width: 60px;
+  height: 45px;
+}
+
+.action-buttons-outer {
+  max-width: 234px;
+  text-align: center;
+  width: 100%;
+}
+
+.action-buttons {
+  display: inline-block;
 }
