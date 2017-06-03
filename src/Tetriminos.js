@@ -1,6 +1,7 @@
 class Tetrimino{
-  constructor(color, dotArray) {
+  constructor(color, dotArray, tetriminoClass) {
     this.color = color;
+    this.tetriminoClass = tetriminoClass;
     this.dotArray = dotArray;
     this.position = 0;
     this.coordinates = {
@@ -88,7 +89,7 @@ export class TetriminoI extends Tetrimino {
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0]
-    ]);
+    ], 'TetriminoI');
   }
 
   rotate() {
@@ -119,7 +120,7 @@ export class TetriminoJ extends Tetrimino {
       [2, 2, 2],
       [0, 0, 2],
       [0, 0, 0]
-    ]);
+    ], 'TetriminoJ');
   }
 
   rotate() {
@@ -163,7 +164,7 @@ export class TetriminoL extends Tetrimino {
       [3, 3, 3],
       [3, 0, 0],
       [0, 0, 0]
-    ]);
+    ], 'TetriminoL');
   }
 
   rotate() {
@@ -207,7 +208,7 @@ export class TetriminoO extends Tetrimino {
       [4, 4, 0],
       [4, 4, 0],
       [0, 0, 0]
-    ]);
+    ], 'TetriminoO');
   }
 
   rotate() {
@@ -221,7 +222,7 @@ export class TetriminoS extends Tetrimino {
       [0, 5, 5],
       [5, 5, 0],
       [0, 0, 0]
-    ]);
+    ], 'TetriminoS');
   }
 
   rotate() {
@@ -250,7 +251,7 @@ export class TetriminoT extends Tetrimino {
       [6, 6, 6],
       [0, 6, 0],
       [0, 0, 0]
-    ]);
+    ], 'TetriminoT');
   }
 
   rotate() {
@@ -294,7 +295,7 @@ export class TetriminoZ extends Tetrimino {
       [7, 7, 0],
       [0, 7, 7],
       [0, 0, 0]
-    ]);
+    ], 'TetriminoZ');
   }
 
   rotate() {
