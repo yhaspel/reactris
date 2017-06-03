@@ -2,7 +2,7 @@ import { TetriminoI, TetriminoJ, TetriminoL, TetriminoO, TetriminoS, TetriminoT,
 
 import {BOARD_HEIGHT, BOARD_WIDTH} from './constants.js';
 
-export function detectCollision(type, board, currentTetrimino) {
+export function detectCollision(type, board, currentTetrimino, currentTetriminoClassName) {
     switch (type) {
         case 'bottom':
             return detectBottomCollision(board, currentTetrimino);
@@ -11,16 +11,16 @@ export function detectCollision(type, board, currentTetrimino) {
         case 'right': 
             return detectRightCollision(board, currentTetrimino);
         case 'rotate':
-            return detectRotationCollisionAndAdjustCoords(board, currentTetrimino);
+            return detectRotationCollisionAndAdjustCoords(board, currentTetrimino, currentTetriminoClassName);
         default:
             throw new Error('Error in detecton type!');
     }
 }
 
 
-function getNextTetrimino(currentTetrimino) {
+function getNextTetrimino(currentTetrimino, tetriminoClassName) {
     let nextTetrimino;
-    switch (currentTetrimino.constructor.name) {
+    switch (tetriminoClassName) {
       case 'TetriminoI':
         nextTetrimino = new TetriminoI();
         break;
@@ -50,8 +50,8 @@ function getNextTetrimino(currentTetrimino) {
     return nextTetrimino;
   }
 
-  function detectRotationCollisionAndAdjustCoords(boardArray, currentTetrimino) {
-    let nextTetrimino = getNextTetrimino(currentTetrimino);
+  function detectRotationCollisionAndAdjustCoords(boardArray, currentTetrimino, tetriminoClassName) {
+    let nextTetrimino = getNextTetrimino(currentTetrimino, tetriminoClassName);
     let borderAdjustCoord = getOutOfBorderCoord(nextTetrimino);
     let collisionCoordsAffected = false;
 

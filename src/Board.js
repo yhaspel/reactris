@@ -87,7 +87,7 @@ export class Board extends Component {
   }
 
   detectRotationCollisionAndAdjustCoords() {
-    return detectCollision('rotate', this.state.boardArray, this.currentTetrimino);    
+    return detectCollision('rotate', this.state.boardArray, this.currentTetrimino, this.currentTetrimino.constructor.name);    
   }
 
   advanceTetriminos = () => {
