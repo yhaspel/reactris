@@ -20,6 +20,7 @@ export function detectCollision(type, board, currentTetrimino, currentTetriminoC
 
 function getNextTetrimino(currentTetrimino, tetriminoClassName) {
     let nextTetrimino;
+    console.log(tetriminoClassName);
     switch (tetriminoClassName) {
       case 'TetriminoI':
         nextTetrimino = new TetriminoI();
