@@ -117,3 +117,7 @@
 .action-buttons {
   display: block;
 }
+
+.lower-buttons-row {
+  margin-bottom: 50px;
+}

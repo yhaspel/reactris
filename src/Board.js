@@ -65,6 +65,7 @@ export class Board extends Component {
         this.setState({time: time, score: this.state.score + 1000 * completedRowIndices.length});
         this.removeCompletedRows(completedRowIndices);
       }
+      this.handleDownMouseUp();
       this.putNewTetriminoOnBoard();
       
     } else {
@@ -225,7 +226,7 @@ export class Board extends Component {
                 <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleRotateClick(e)}>{ROTATE}</button>
                 <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleRightClick(e)}>{RIGHT}</button>
               </div>
-              <div className="action-buttons">
+              <div className="action-buttons lower-buttons-row">
                 <button disabled={this.state.mode === 'game over'} className="action-button" onMouseDown={(e) => this.handleDownMouseDown(e)} onMouseUp={(e) => this.handleDownMouseUp(e)} onMouseLeave={(e) => this.handleDownMouseUp(e)}>{DOWN}</button>
               </div>
             </div>

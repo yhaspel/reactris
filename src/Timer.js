@@ -12,7 +12,7 @@ export class Timer extends Component {
 
   shortenInterval() {
     let fivePercent = Math.floor(this.interval / 20);
-    this.interval = Math.max(10, this.interval - fivePercent);
+    this.interval = Math.max(20, this.interval - fivePercent);
     this.stopTimer();
     this.intervalId = setInterval(() => {
       this.setState({counter: this.counter++});
