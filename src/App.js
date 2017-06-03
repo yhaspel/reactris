@@ -16,7 +16,7 @@ class App extends Component {
   }
 
   downHold = () => {
-    this.timer.setTempTimerInterval(5);
+    this.timer.setTempTimerInterval(10);
   }
 
   downRelease = () => {
