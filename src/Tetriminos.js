@@ -9,6 +9,16 @@ class Tetrimino{
     }
   }
 
+  cloneTetriminoProperties(tetriminoInstance) {
+    this.color = tetriminoInstance.color;
+    this.dotArray = JSON.parse(JSON.stringify(tetriminoInstance.dotArray));
+    this.position = tetriminoInstance.position;
+    this.coordinates = {
+      i: tetriminoInstance.coordinates.i,
+      j: tetriminoInstance.coordinates.j
+    }
+  }
+
   setCoordinates = (coords) => {
     if (!coords) {
       throw new Error("no coordinate parameter!");

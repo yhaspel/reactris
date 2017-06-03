@@ -15,6 +15,14 @@ class App extends Component {
     this.timer.stopTimer();
   }
 
+  downHold = () => {
+    this.timer.setTempTimerInterval(5);
+  }
+
+  downRelease = () => {
+    this.timer.restoreTimerInterval();
+  }
+
   advanceRow = (res) => {
     this.board.advanceBoard(res);
   }
@@ -25,23 +33,32 @@ class App extends Component {
       'Keys:',
       '<< - move left',
       '@  - rotate tetrimino',
-      '> - move right'
+      '>  - move right',
+      'V  - advance downwards faster'
     ];
     alert(message + '\n' + keys.join('\n'));
+  }
+
+  handleRestart(e) {
+    this.board.restartBoard();
+    this.timer.restartTimer();
   }
 
   render() {
     return (
       <div>
-        <div onClick={this.showAboutHelpAlert} className="header-outer">
+        <div className="header-outer">
           <div className="bg">
-            <h1>Tetris</h1>
+            <h1 title="click here for help" onClick={this.showAboutHelpAlert} >Tetris</h1>
             <h5>by Yuval Haspel</h5>
+            <div className="restart-button-section">
+              <button className="restart-button" onClick={(e) => this.handleRestart(e)}>Restart Game</button>
+            </div>
             <Timer onTimeChange={this.advanceRow} ref={instance => { this.timer = instance; }}/>
           </div>
         </div>
         <div>
-          <Board onTimerStop={this.stopTimer} ref={instance => { this.board = instance; }}/>
+          <Board onTimerStop={this.stopTimer} onDownHold={this.downHold} onDownRelease={this.downRelease} ref={instance => { this.board = instance; }}/>
         </div>
       </div>
     );

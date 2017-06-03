@@ -1,23 +1,27 @@
 import React, { Component } from 'react';
 import { TetriminoI, TetriminoJ, TetriminoL, TetriminoO, TetriminoS, TetriminoT, TetriminoZ } from './Tetriminos.js';
+import {detectCollision} from './CollisionDetetctionService.js';
+import {BOARD_HEIGHT, BOARD_WIDTH} from './constants.js';
 
-let BOARD_WIDTH = 12;
-let BOARD_HEIGHT = 24;
 let LEFT = '<<';
 let RIGHT = '>>';
 let ROTATE = '@';
+let DOWN = 'V'
 
 export class Board extends Component {
   constructor() {
     super();
-    this.height = BOARD_HEIGHT;
-    this.width = BOARD_WIDTH;
     this.currentTetrimino = null;
     this.state = {
       score: 0,
       mode: 'new',
       boardArray: this.getBaseBoardArray(BOARD_HEIGHT, BOARD_WIDTH)
     };
+  }
+
+  restartBoard() {
+    this.currentTetrimino = null;
+    this.setState({score: 0, mode: 'new', boardArray: this.getBaseBoardArray(BOARD_HEIGHT, BOARD_WIDTH)})
   }
 
   getCompletedRows() {
@@ -70,100 +74,20 @@ export class Board extends Component {
     this.setBoardWithTetriminos();
   }
 
-  detectRightCollision() {
-      let coords = this.getRightCoords();
-      for (let coord of coords) { 
-        let i = coord.i;
-        let j = coord.j;
-        if (j+1 >= BOARD_WIDTH
-        || !!this.state.boardArray[i][j+1]) {
-          return true;
-        }
-      }
-      return false;
-  }
-
-  getRightCoords() {
-    let coords = [];
-    for(let i=0; i<this.currentTetrimino.dotArray.length; i++) {
-      for(let j=this.currentTetrimino.dotArray[0].length-1; j>=0; j--) {
-        if (!!this.currentTetrimino.dotArray[i][j]) { 
-          coords.push(
-            {
-              i: (i + this.currentTetrimino.coordinates.i), 
-              j: (j + this.currentTetrimino.coordinates.j)              
-            }
-          );
-          continue;
-        }
-      }
-    }
-    return coords;
+  detectBottomCollision() {
+    return detectCollision('bottom', this.state.boardArray, this.currentTetrimino);
   }
 
   detectLeftCollision() {
-      let coords = this.getLeftCoords();
-
-      for (let coord of coords) { 
-        let i = coord.i;
-        let j = coord.j;
-        if (j <= 0
-        || !!this.state.boardArray[i][j-1]) {
-          return true;
-        }
-      }
-      return false;
+    return detectCollision('left', this.state.boardArray, this.currentTetrimino);
   }
 
-  getLeftCoords() {
-    let coords = [];
-    for(let i=0; i<this.currentTetrimino.dotArray.length; i++) {
-      for(let j=0; j<this.currentTetrimino.dotArray[0].length; j++) {
-        if (!!this.currentTetrimino.dotArray[i][j]) {
-          coords.push(
-            {
-              i: (i + this.currentTetrimino.coordinates.i), 
-              j: (j + this.currentTetrimino.coordinates.j)              
-            }
-          );
-          continue;
-        }
-      }
-    }
-    return coords;
+  detectRightCollision() {
+    return detectCollision('right', this.state.boardArray, this.currentTetrimino);
   }
 
-  detectBottomCollision() {
-      let coords = this.getBottomCoords();
-
-      for (let coord of coords) { 
-        let i = coord.i;
-        let j = coord.j;
-        if (i+1 >= this.state.boardArray.length
-        || !!this.state.boardArray[i+1][j]) {
-          return true;
-        }
-      }
-      return false;
-  }
-
-  getBottomCoords() {
-    let coords = [];
-
-    for(let j=0; j< this.currentTetrimino.dotArray[0].length; j++) {
-      for(let i=0; i< this.currentTetrimino.dotArray.length; i++) {
-        if (!!this.currentTetrimino.dotArray[i][j] 
-        && !!!this.currentTetrimino.dotArray[i+1][j]) {
-          coords.push(
-            {
-              i: (i + this.currentTetrimino.coordinates.i), 
-              j: (j + this.currentTetrimino.coordinates.j)              
-            }
-          );
-        }
-      }
-    }
-    return coords;
+  detectRotationCollisionAndAdjustCoords() {
+    return detectCollision('rotate', this.state.boardArray, this.currentTetrimino);    
   }
 
   advanceTetriminos = () => {
@@ -238,6 +162,7 @@ export class Board extends Component {
   }
 
   handleLeftClick(e) {
+      this.setState({mode: 'left'});
       this.clearCurrentTetrimino();
       if (!this.detectLeftCollision()) {
         this.currentTetrimino.coordinates.j--;
@@ -248,11 +173,13 @@ export class Board extends Component {
   handleRotateClick(e) {
       this.setState({mode: 'rotation'});
       this.clearCurrentTetrimino();
+      this.detectRotationCollisionAndAdjustCoords()
       this.currentTetrimino.rotate();
       this.setBoardWithTetriminos();
   }
 
   handleRightClick(e) {
+      this.setState({mode: 'right'});
       this.clearCurrentTetrimino();
       if (!this.detectRightCollision()) {
         this.currentTetrimino.coordinates.j++;
@@ -260,13 +187,24 @@ export class Board extends Component {
       this.setBoardWithTetriminos();
   }
 
+  handleDownMouseDown(e) {
+    this.props.onDownHold();
+  }
+
+  handleDownMouseUp(e) {
+    this.props.onDownRelease();
+  }
+
+
   render() {
     return (
       <div>
         <div className="tetris-board">
           <div className="bg">
             <div>
-              Score:{ this.state.score }
+              <h5>
+                Score:{ this.state.score }
+              </h5>
             </div>
             <table className="tetris-board-table">
                 <tbody>
@@ -286,6 +224,9 @@ export class Board extends Component {
                 <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleLeftClick(e)}>{LEFT}</button>
                 <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleRotateClick(e)}>{ROTATE}</button>
                 <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleRightClick(e)}>{RIGHT}</button>
+              </div>
+              <div className="action-buttons">
+                <button disabled={this.state.mode === 'game over'} className="action-button" onMouseDown={(e) => this.handleDownMouseDown(e)} onMouseUp={(e) => this.handleDownMouseUp(e)} onMouseLeave={(e) => this.handleDownMouseUp(e)}>{DOWN}</button>
               </div>
             </div>
           </div>
