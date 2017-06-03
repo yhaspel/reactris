@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { TetriminoI, TetriminoJ, TetriminoL, TetriminoO, TetriminoS, TetriminoT, TetriminoZ } from './Tetriminos.js';
-import {detectCollision} from './CollisionDetetctionService.js';
+// import {detectCollision} from './CollisionDetetctionService.js';
 import {BOARD_HEIGHT, BOARD_WIDTH} from './constants.js';
 
 let LEFT = '<<';
@@ -74,20 +74,220 @@ export class Board extends Component {
     this.setBoardWithTetriminos();
   }
 
-  detectBottomCollision() {
-    return detectCollision('bottom', this.state.boardArray, this.currentTetrimino);
-  }
-
-  detectLeftCollision() {
-    return detectCollision('left', this.state.boardArray, this.currentTetrimino);
-  }
-
-  detectRightCollision() {
-    return detectCollision('right', this.state.boardArray, this.currentTetrimino);
+  getNextTetrimino() {
+    let nextTetrimino;
+    switch (this.currentTetrimino.constructor.name) {
+      case 'TetriminoI':
+        nextTetrimino = new TetriminoI();
+        break;
+      case 'TetriminoJ':
+        nextTetrimino = new TetriminoJ();
+        break;
+      case 'TetriminoL':
+        nextTetrimino = new TetriminoL();
+        break;
+      case 'TetriminoO':
+        nextTetrimino = new TetriminoO();
+        break;
+      case 'TetriminoS':
+        nextTetrimino = new TetriminoS();
+        break;
+      case 'TetriminoT':
+        nextTetrimino = new TetriminoT();
+        break;
+      case 'TetriminoZ':
+        nextTetrimino = new TetriminoZ();
+        break;
+      default:
+        throw new Error('Error generating tetrimino!');
+    }
+    nextTetrimino.cloneTetriminoProperties(this.currentTetrimino);
+    nextTetrimino.rotate();
+    return nextTetrimino;
   }
 
   detectRotationCollisionAndAdjustCoords() {
-    return detectCollision('rotate', this.state.boardArray, this.currentTetrimino, this.currentTetrimino.constructor.name);    
+    let nextTetrimino = this.getNextTetrimino();
+    let borderAdjustCoord = this.getOutOfBorderCoord(nextTetrimino);
+    let collisionCoordsAffected = false;
+
+    if (!!borderAdjustCoord) {
+      // this.adjustTetriminoCoords(borderAdjustCoord);
+      if (borderAdjustCoord.i >= BOARD_HEIGHT) {
+        collisionCoordsAffected = true;
+        nextTetrimino.coordinates.i = nextTetrimino.coordinates.i - (borderAdjustCoord.i - BOARD_HEIGHT + 1);
+      }
+
+      if (borderAdjustCoord.j >= BOARD_WIDTH) {
+        collisionCoordsAffected = true;
+        nextTetrimino.coordinates.j = nextTetrimino.coordinates.j - (borderAdjustCoord.j - BOARD_WIDTH + 1);
+      }
+    }
+
+    let collisionAdjustCoord = this.getCollisionCoord(nextTetrimino);
+    while (!!collisionAdjustCoord) {
+      collisionCoordsAffected = true;
+      if (nextTetrimino.coordinates.i > 0) {
+        nextTetrimino.coordinates.i -= 1;
+      }
+
+      collisionAdjustCoord = this.getCollisionCoord(nextTetrimino);
+    };
+
+    if (collisionCoordsAffected) {
+      this.currentTetrimino.coordinates.i = nextTetrimino.coordinates.i;
+      this.currentTetrimino.coordinates.j = nextTetrimino.coordinates.j;
+    }
+  }
+
+  getCollisionCoord(nextTetrimino) {
+    let coords = [];
+    for(let i=0; i<nextTetrimino.dotArray.length; i++) {
+      for(let j=0; j<nextTetrimino.dotArray[0].length; j++) {
+        if (!!nextTetrimino.dotArray[i][j]) {
+          if (!!this.state.boardArray[nextTetrimino.coordinates.i + i][nextTetrimino.coordinates.j + j]) {
+            coords.push({
+              i: (nextTetrimino.coordinates.i + i),
+              j: (nextTetrimino.coordinates.j + j)
+            })
+          }
+        }
+      }
+    }
+
+    return coords.length? coords : false;
+  }
+
+  getOutOfBorderCoord(nextTetrimino) {
+    let coords = [];
+    for(let i=0; i<nextTetrimino.dotArray.length; i++) {
+      for(let j=0; j<nextTetrimino.dotArray[0].length; j++) {
+        if (!!nextTetrimino.dotArray[i][j] 
+        && (nextTetrimino.coordinates.i + i >= BOARD_HEIGHT
+        || nextTetrimino.coordinates.j + j >= BOARD_WIDTH
+        || nextTetrimino.coordinates.i + i < 0)) {
+          coords.push({
+            i: (nextTetrimino.coordinates.i + i),
+            j: (nextTetrimino.coordinates.j + j)
+          })
+        }
+      }
+    }
+    let divergentCoord = {i: 0, j: 0};
+    for (let coord of coords) {
+      if (coord.i > divergentCoord.i
+      || coord.j > divergentCoord.j) {
+        divergentCoord.i = coord.i;
+        divergentCoord.j = coord.j;
+      }
+    }
+    return coords.length? divergentCoord : false;
+  }
+
+  adjustTetriminoCoords(borderAdjustCoord) {
+    if (borderAdjustCoord.i >= BOARD_HEIGHT) {
+      this.currentTetrimino.coordinates.i = this.currentTetrimino.coordinates.i - (borderAdjustCoord.i - BOARD_HEIGHT + 1);
+    }
+
+    if (borderAdjustCoord.j >= BOARD_WIDTH) {
+      this.currentTetrimino.coordinates.j = this.currentTetrimino.coordinates.j - (borderAdjustCoord.j - BOARD_WIDTH + 1);
+    }
+  }
+
+  detectRightCollision() {
+      let coords = this.getRightCoords();
+      for (let coord of coords) { 
+        let i = coord.i;
+        let j = coord.j;
+        if (j+1 >= BOARD_WIDTH
+        || !!this.state.boardArray[i][j+1]) {
+          return true;
+        }
+      }
+      return false;
+  }
+
+  getRightCoords() {
+    let coords = [];
+    for(let i=0; i<this.currentTetrimino.dotArray.length; i++) {
+      for(let j=this.currentTetrimino.dotArray[0].length-1; j>=0; j--) {
+        if (!!this.currentTetrimino.dotArray[i][j]) { 
+          coords.push(
+            {
+              i: (i + this.currentTetrimino.coordinates.i), 
+              j: (j + this.currentTetrimino.coordinates.j)              
+            }
+          );
+          continue;
+        }
+      }
+    }
+    return coords;
+  }
+
+  detectLeftCollision() {
+      let coords = this.getLeftCoords();
+
+      for (let coord of coords) { 
+        let i = coord.i;
+        let j = coord.j;
+        if (j <= 0
+        || !!this.state.boardArray[i][j-1]) {
+          return true;
+        }
+      }
+      return false;
+  }
+
+  getLeftCoords() {
+    let coords = [];
+    for(let i=0; i<this.currentTetrimino.dotArray.length; i++) {
+      for(let j=0; j<this.currentTetrimino.dotArray[0].length; j++) {
+        if (!!this.currentTetrimino.dotArray[i][j]) {
+          coords.push(
+            {
+              i: (i + this.currentTetrimino.coordinates.i), 
+              j: (j + this.currentTetrimino.coordinates.j)              
+            }
+          );
+          continue;
+        }
+      }
+    }
+    return coords;
+  }
+
+  detectBottomCollision() {
+      let coords = this.getBottomCoords();
+
+      for (let coord of coords) { 
+        let i = coord.i;
+        let j = coord.j;
+        if (i+1 >= this.state.boardArray.length
+        || !!this.state.boardArray[i+1][j]) {
+          return true;
+        }
+      }
+      return false;
+  }
+
+  getBottomCoords() {
+    let coords = [];
+
+    for(let j=0; j< this.currentTetrimino.dotArray[0].length; j++) {
+      for(let i=0; i< this.currentTetrimino.dotArray.length; i++) {
+        if (!!this.currentTetrimino.dotArray[i][j] 
+        && !!!this.currentTetrimino.dotArray[i+1][j]) {
+          coords.push(
+            {
+              i: (i + this.currentTetrimino.coordinates.i), 
+              j: (j + this.currentTetrimino.coordinates.j)              
+            }
+          );
+        }
+      }
+    }
+    return coords;
   }
 
   advanceTetriminos = () => {
