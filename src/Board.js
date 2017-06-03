@@ -76,6 +76,7 @@ export class Board extends Component {
 
   getNextTetrimino() {
     let nextTetrimino;
+    console.log('this.currentTetrimino.constructor.name', this.currentTetrimino.constructor.name);
     switch (this.currentTetrimino.constructor.name) {
       case 'TetriminoI':
         nextTetrimino = new TetriminoI();
