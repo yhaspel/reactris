@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { TetriminoI, TetriminoJ, TetriminoL, TetriminoO, TetriminoS, TetriminoT, TetriminoZ } from './Tetriminos.js';
 import {detectCollision} from './CollisionDetetctionService.js';
 import {BOARD_HEIGHT, BOARD_WIDTH} from './constants.js';
+import {TetriminoStack} from './TetriminoStack.js'
+
 
 let LEFT = '<<';
 let RIGHT = '>>';
@@ -108,8 +109,7 @@ export class Board extends Component {
   }
 
   setCurrentTetrimino() {
-    // TODO fetch from teteriminos queue when implemented
-    this.currentTetrimino = this.getRandomTetrimino(); 
+    this.currentTetrimino = this.tetriminoStack.pop(); 
   }
 
   putNewTetriminoOnBoard = () => {
@@ -124,7 +124,7 @@ export class Board extends Component {
   }
 
   setBoardWithTetriminos = (clear) => {
-    var board = this.state.boardArray.concat();
+    let board = this.state.boardArray.concat();
     let tCoords = this.currentTetrimino.dotArray;
     for (let i=0; i<tCoords.length; i++) {
       for (let j=0; j<tCoords[i].length; j++) {
@@ -135,20 +135,6 @@ export class Board extends Component {
       }
     }
     this.setState({boardArray: board.concat()});
-  }
-
-  getRandomTetrimino() {
-    var random = Math.floor((Math.random() * 7) + 1);
-    switch(random) {
-      case 1: return new TetriminoI();
-      case 2: return new TetriminoJ();
-      case 3: return new TetriminoL();
-      case 4: return new TetriminoO();
-      case 5: return new TetriminoS();
-      case 6: return new TetriminoT();
-      case 7: return new TetriminoZ();
-      default: throw new Error("Error selecting Teteriminos");
-    }
   }
 
   getBaseBoardArray(height, width) {
@@ -199,7 +185,7 @@ export class Board extends Component {
 
   render() {
     return (
-      <div>
+      <div className="tetris-board-outer">
         <div className="tetris-board">
           <div className="bg">
             <div>
@@ -231,6 +217,9 @@ export class Board extends Component {
               </div>
             </div>
           </div>
+        </div>
+        <div>
+          <TetriminoStack ref={instance => { this.tetriminoStack = instance; }}/>
         </div>
       </div>
     );

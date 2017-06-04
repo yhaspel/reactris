@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Timer } from './Timer.js';
 import { Board } from './Board.js';
+import { TetriminoStack } from './TetriminoStack.js';
 import './App.css';
 
 class App extends Component {
@@ -59,6 +60,8 @@ class App extends Component {
         </div>
         <div>
           <Board onTimerStop={this.stopTimer} onDownHold={this.downHold} onDownRelease={this.downRelease} ref={instance => { this.board = instance; }}/>
+        </div>
+        <div>
         </div>
       </div>
     );
