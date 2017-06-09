@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 let STARTING_INTERVAL = 400;
-let STARTING_LEVEL_ADVANCE_TICKS = 10;
+let STARTING_LEVEL_ADVANCE_TICKS = 100;
 
 export class Timer extends Component {
   constructor() {
@@ -42,22 +42,6 @@ export class Timer extends Component {
     this.levelAdvanceTicks = STARTING_LEVEL_ADVANCE_TICKS;
     this.setIntervalId();
   }
-
-  // setIntervalId() {
-  //   let internalCallback = () => {
-  //     this.setState({counter: this.state.counter + 1});
-  //     if (this.state.counter >= this.levelAdvanceTicks) {
-  //       this.setState({level: this.state.level + 1 })
-  //       this.levelAdvanceTicks = STARTING_LEVEL_ADVANCE_TICKS * this.state.level;
-  //       this.interval = this.getShortenedInterval(this.interval);
-  //     }
-  //     this.props.onIntervalTick(this.state.counter);
-  //     this.stopTimer();
-  //     this.timers.push(setTimeout(internalCallback, this.interval));
-  //   };
-  //   this.stopTimer();
-  //   this.timers.push(setTimeout(internalCallback, this.interval));
-  // }
 
   setIntervalId() {
     let internalCallback = () => {
