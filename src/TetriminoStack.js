@@ -49,7 +49,6 @@ export class TetriminoStack extends Component {
         let i = 0, stackIndex = 0;
         for (i=0, stackIndex = 0; i<stackBoard.length; i+=6, stackIndex++) {
             let tCoords = this.stack[stackIndex].dotArray;
-            // console.log('t', tCoords);
             for (let rowIndex=0; rowIndex<tCoords.length; rowIndex++) {
                 for (let cellIndex=0; cellIndex<tCoords[rowIndex].length; cellIndex++) {
                     if (!!tCoords[rowIndex][cellIndex]) {
@@ -80,15 +79,19 @@ export class TetriminoStack extends Component {
                 <div className="tetrimino-stack">
                     <table>
                         <tbody>
-                            {this.state.stackBoard.map(function(row, i) {
-                            return (
-                                <tr key={i}>
-                                {row.map(function(col, j){
-                                    return (<td className="stack-cell" key={j}><div className={col === 1? 'red': col === 2? 'gray': col === 3? 'purple' : col === 4 ? 'blue' : col === 5 ? 'green' : col === 6 ? 'brown' : col === 7 ? 'teal' : ''}>{col}</div></td>);
-                                })}
-                                </tr>
-                            );
-                            })}
+                            {
+                                this.state.stackBoard.map(function(row, i) {
+                                    return (
+                                        <tr key={i}>
+                                            {
+                                                row.map(function(col, j){
+                                                    return (<td className="stack-cell" key={j}><div className={col === 1? 'red': col === 2? 'gray': col === 3? 'purple' : col === 4 ? 'blue' : col === 5 ? 'green' : col === 6 ? 'brown' : col === 7 ? 'teal' : ''}>{col}</div></td>);
+                                                })
+                                            }
+                                        </tr>
+                                    );
+                                })
+                            }
                         </tbody> 
                     </table>
                 </div>

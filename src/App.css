@@ -118,9 +118,8 @@
   margin: 10px 0;
 }
 
-.restart-button {
-  min-width: 120px;
-  min-height: 35px;
+.restart-button, .about-button, .help-button {
+  min-height: 25px;
 }
 
 .action-buttons {
@@ -128,7 +127,7 @@
 }
 
 .lower-buttons-row {
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 
 .tetrimino-stack-outer {

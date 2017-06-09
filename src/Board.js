@@ -66,7 +66,6 @@ export class Board extends Component {
         this.setState({time: time, score: this.state.score + 1000 * completedRowIndices.length});
         this.removeCompletedRows(completedRowIndices);
       }
-      this.handleDownMouseUp();
       this.putNewTetriminoOnBoard();
       
     } else {
@@ -91,7 +90,7 @@ export class Board extends Component {
   detectRotationCollisionAndAdjustCoords() {
     return detectCollision('rotate', this.state.boardArray, this.currentTetrimino);
   }
-
+sta
   advanceTetriminos = () => {
     if (!this.detectBottomCollision()) {
       this.clearCurrentTetrimino();
@@ -99,8 +98,7 @@ export class Board extends Component {
     } else {
       if (this.currentTetrimino.coordinates.i === 0) {
         this.setState({mode: 'game over'});
-        this.props.onTimerStop(this.counter);
-        alert('GAME OVER!');
+        this.props.onGameOver(this.counter);
       }
       if (this.state.mode !== 'game over') {
         this.setState({mode: 'bottom collision'});
@@ -182,7 +180,6 @@ export class Board extends Component {
     this.props.onDownRelease();
   }
 
-
   render() {
     return (
       <div className="tetris-board-outer">
@@ -213,7 +210,7 @@ export class Board extends Component {
                 <button disabled={this.state.mode === 'game over'} className="action-button" onClick={(e) => this.handleRightClick(e)}>{RIGHT}</button>
               </div>
               <div className="action-buttons lower-buttons-row">
-                <button disabled={this.state.mode === 'game over'} className="action-button" onMouseDown={(e) => this.handleDownMouseDown(e)} onMouseUp={(e) => this.handleDownMouseUp(e)} onMouseLeave={(e) => this.handleDownMouseUp(e)}>{DOWN}</button>
+                <button disabled={this.state.mode === 'game over'} className="action-button" onMouseDown={(e) => this.handleDownMouseDown(e)} onMouseUp={(e) => this.handleDownMouseUp(e)}>{DOWN}</button>
               </div>
             </div>
           </div>

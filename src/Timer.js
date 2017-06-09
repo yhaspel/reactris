@@ -1,87 +1,96 @@
 import React, { Component } from 'react';
 
 let STARTING_INTERVAL = 400;
-let STARTING_LEVEL_ADVANCE_TICKS = 100;
-let tempInterval = STARTING_INTERVAL;
+let STARTING_LEVEL_ADVANCE_TICKS = 10;
 
 export class Timer extends Component {
   constructor() {
     super();
+    this.timers = [];
+    this.runMode = true;
     this.startTimer();
   }
 
-  shortenInterval() {
-    let fivePercent = Math.floor(this.interval / 20);
-    this.interval = Math.max(20, this.interval - fivePercent);
-    this.stopTimer();
-    this.intervalId = setInterval(() => {
-      this.setState({counter: this.counter++});
-      if (this.counter >= this.levelAdvanceTicks) {
-        this.shortenInterval();
-        this.level++;
-        this.levelAdvanceTicks = this.levelAdvanceTicks * this.level;
-      }
-      this.props.onTimeChange(this.counter);
-    }, this.interval);
+  getShortenedInterval(oldInterval) {
+    let fivePercent = Math.floor(oldInterval / 20);
+    return Math.max(20, oldInterval - fivePercent);
   }
 
-  restartTimer() {
+  setInterval(interval) { 
+    this.interval = interval;
+  }
+
+  setRunMode(val) {
+    this.runMode = val;
+  }
+
+  getInterval() {
+    return this.interval;
+  }
+
+  restartTimer()  {
     this.stopTimer();
     this.startTimer();
   }
 
   startTimer() {
-    this.counter = 0;
+    this.state = {
+      counter: 0,
+      level: 1
+    }
     this.interval = STARTING_INTERVAL;
     this.levelAdvanceTicks = STARTING_LEVEL_ADVANCE_TICKS;
-    this.level = 1;
-    this.intervalId = setInterval(() => {
-      this.setState({counter: this.counter++});
-      if (this.counter >= this.levelAdvanceTicks) {
-        this.shortenInterval();
-        this.level++;
-        this.levelAdvanceTicks = this.levelAdvanceTicks * this.level;
-      }
-      this.props.onTimeChange(this.counter);
-    }, this.interval);
+    this.setIntervalId();
   }
 
-  setTempTimerInterval(interval) {
-    tempInterval = this.interval;
-    this.interval = interval;
+  // setIntervalId() {
+  //   let internalCallback = () => {
+  //     this.setState({counter: this.state.counter + 1});
+  //     if (this.state.counter >= this.levelAdvanceTicks) {
+  //       this.setState({level: this.state.level + 1 })
+  //       this.levelAdvanceTicks = STARTING_LEVEL_ADVANCE_TICKS * this.state.level;
+  //       this.interval = this.getShortenedInterval(this.interval);
+  //     }
+  //     this.props.onIntervalTick(this.state.counter);
+  //     this.stopTimer();
+  //     this.timers.push(setTimeout(internalCallback, this.interval));
+  //   };
+  //   this.stopTimer();
+  //   this.timers.push(setTimeout(internalCallback, this.interval));
+  // }
+
+  setIntervalId() {
+    let internalCallback = () => {
+      console.log('internalCallback');
+      if (!this.runMode) {
+        return;
+      }
+      this.setState({counter: this.state.counter + 1});
+      if (this.state.counter >= this.levelAdvanceTicks) {
+        this.setState({level: this.state.level + 1 })
+        this.levelAdvanceTicks = STARTING_LEVEL_ADVANCE_TICKS * this.state.level;
+        this.interval = this.getShortenedInterval(this.interval);
+      }
+      this.props.onIntervalTick(this.state.counter);
+      this.stopTimer();
+      this.timers.push(setTimeout(internalCallback, this.interval));
+    };
     this.stopTimer();
-    this.intervalId = setInterval(() => {
-      this.setState({counter: this.counter++});
-      if (this.counter >= this.levelAdvanceTicks) {
-        this.shortenInterval();
-        this.level++;
-        this.levelAdvanceTicks = this.levelAdvanceTicks * this.level;
-      }
-      this.props.onTimeChange(this.counter);
-    }, this.interval);
+    this.timers.push(setTimeout(internalCallback, this.interval));
   }
 
-  restoreTimerInterval() {
-    this.interval = tempInterval;
-    this.stopTimer();
-    this.intervalId = setInterval(() => {
-      this.setState({counter: this.counter++});
-      if (this.counter >= this.levelAdvanceTicks) {
-        this.shortenInterval();
-        this.level++;
-        this.levelAdvanceTicks = this.levelAdvanceTicks * this.level;
-      }
-      this.props.onTimeChange(this.counter);
-    }, this.interval);
-  }
 
-  stopTimer() {
-    clearInterval(this.intervalId);
+  stopTimer = () => {
+    for (let timeoutIndex in this.timers) {
+      let timeoutId = this.timers[timeoutIndex];
+      clearTimeout(timeoutId);
+      this.timers.splice(timeoutIndex,1);
+    }
   }
 
   render() {
     return (
-      <span><h4>Level:{this.level}</h4></span>
+      <span><h4>Level:{this.state.level}</h4></span>
     );
   }
 }
