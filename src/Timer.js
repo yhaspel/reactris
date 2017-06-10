@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-
-let STARTING_INTERVAL = 400;
-let STARTING_LEVEL_ADVANCE_TICKS = 100;
+import {PERCENTAGE_SPEED_INCREASE, MIN_INTERVAL, STARTING_INTERVAL, STARTING_LEVEL_ADVANCE_TICKS} from './constants.js';
 
 export class Timer extends Component {
   constructor() {
@@ -12,8 +10,8 @@ export class Timer extends Component {
   }
 
   getShortenedInterval(oldInterval) {
-    let fivePercent = Math.floor(oldInterval / 20);
-    return Math.max(20, oldInterval - fivePercent);
+    let fivePercent = Math.floor(oldInterval / (100 / PERCENTAGE_SPEED_INCREASE));
+    return Math.max(MIN_INTERVAL, oldInterval - fivePercent);
   }
 
   setInterval(interval) { 

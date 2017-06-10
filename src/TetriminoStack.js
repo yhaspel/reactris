@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { TetriminoI, TetriminoJ, TetriminoL, TetriminoO, TetriminoS, TetriminoT, TetriminoZ } from './Tetriminos.js';
-
-let STACK_CAPACITY = 4;
-let STACK_HEIGHT = 6 * STACK_CAPACITY;
-let STACK_WIDTH = 6;
+import {STACK_CAPACITY, STACK_HEIGHT, STACK_WIDTH} from './constants.js';
 
 export class TetriminoStack extends Component {
     constructor() {

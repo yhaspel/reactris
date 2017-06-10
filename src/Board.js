@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
 import {detectCollision} from './CollisionDetetctionService.js';
-import {BOARD_HEIGHT, BOARD_WIDTH} from './constants.js';
+import {LEFT, RIGHT, ROTATE, DOWN, BOARD_HEIGHT, BOARD_WIDTH} from './constants.js';
 import {TetriminoStack} from './TetriminoStack.js'
-
-
-let LEFT = '<<';
-let RIGHT = '>>';
-let ROTATE = '@';
-let DOWN = 'V'
 
 export class Board extends Component {
   constructor() {

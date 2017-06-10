@@ -119,7 +119,8 @@ class App extends Component {
       <div>
         <div className="header-outer">
           <div className="bg">
-            <h1 title="click here for help" onClick={this.showAboutHelpAlert} >Tetris</h1>
+            <h1>Tetris</h1>
+            <a href="http://www.github.com/yhaspel/reactris" target="_blank">View Source Code on GitHub</a>
             <div className="restart-button-section">
               <button className="restart-button" onClick={(e) => this.handleRestart(e)}>Restart Game</button>
               <button className="about-button" onClick={(e) => this.showAboutAlert(e)}>About</button>

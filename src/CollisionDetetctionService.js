@@ -17,7 +17,6 @@ export function detectCollision(type, board, currentTetrimino) {
     }
 }
 
-
 function getNextTetrimino(currentTetrimino) {
     let nextTetrimino;
     switch (currentTetrimino.tetriminoClass) {
