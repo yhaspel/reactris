@@ -43,7 +43,6 @@ export class Timer extends Component {
 
   setIntervalId() {
     let internalCallback = () => {
-      console.log('internalCallback');
       if (!this.runMode) {
         return;
       }

@@ -69,6 +69,9 @@ function getNextTetrimino(currentTetrimino) {
     let collisionAdjustCoord = getCollisionCoord(nextTetrimino, boardArray);
     while (!!collisionAdjustCoord) {
       collisionCoordsAffected = true;
+      if (currentTetrimino.coordinates.i <= 0 && nextTetrimino.coordinates.j > 0) {
+        nextTetrimino.coordinates.j -= 1;
+      }
       if (nextTetrimino.coordinates.i > 0) {
         nextTetrimino.coordinates.i -= 1;
       }
